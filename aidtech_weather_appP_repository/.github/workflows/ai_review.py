@@ -221,7 +221,7 @@ def get_all_file_hashes_from_comments(pr):
                 file_hashes[file_path] = file_hash  # Update with new hash value if present
     return file_hashes
 
-if _name_ == '_main_':
+if __name__ == '_main_':
     print("AI review Start! ✨")
     review_pr()
     print("Review done! Check out the PR! 😊👍")

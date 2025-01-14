@@ -78,7 +78,7 @@ def review_pr():
                 previous_file_hash = all_file_hashes.get(file.filename)
 
                 if previous_file_hash != current_file_hash:
-                    review_comment = f"*🚨️ The file '{file.filename}' was deleted!* 🚨️\nPlease check if this change affects other parts!"
+                    review_comment = f"**🚨️ The file '{file.filename}' was deleted!** 🚨️\nPlease check if this change affects other parts!"
                     pr.create_issue_comment(review_comment)
                     file_hashes_to_update[file.filename] = current_file_hash  # Update the deleted file's status
 
@@ -142,7 +142,7 @@ def get_conversation_history(pr, file_path=None):
         if file_path is None or file_path in comment.body:
             if comment.user.login == 'github-actions[bot]':
                 # AI's comment
-                ai_review = re.search(r'AI Review for.?:\n\n(.?)(?=\n\nConclusion\s*:\s*)', comment.body, re.DOTALL)
+                ai_review = re.search(r'AI Review for.*?:\n\n(.*?)(?=\n\nConclusion\s*:\s*)', comment.body, re.DOTALL)
                 if ai_review:
                     conversation.append({"role": "assistant", "content": ai_review.group(1).strip()})
             else:
@@ -170,7 +170,7 @@ def get_all_previous_diffs(pr, file_path):
 
 def review_code(current_diff, previous_diff, conversation_history):
     messages = [
-        {"role": "system", "content": "You are a helpful and informative code reviewer. Consider the previous conversation history and review the current code changes. First find something to praise, then focus on these three main aspects: *1. Verify changes and functionality ✅* *2. Code quality (bugs, readability, maintainability) 🧐* *3. Performance and optimization 🚀. For code quality/readability, only suggest method documentation comments for complex methods. If there are areas for improvement, create a '🎯 Suggestions for Improvement*' section with specific code examples. End the review with praise, and if changes are needed before merging, clearly indicate the file locations that need modification and request additional commits for review. If suggestions for improvement are present but deemed non-essential, it’s okay to merge without additional commits. Offer to answer any questions through comments. Use many emojis and respond in English with a casual, friendly tone."},
+        {"role": "system", "content": "You are a helpful and informative code reviewer. Consider the previous conversation history and review the current code changes. First find something to praise, then focus on these three main aspects: **1. Verify changes and functionality ✅** **2. Code quality (bugs, readability, maintainability) 🧐** **3. Performance and optimization 🚀**. For code quality/readability, only suggest method documentation comments for complex methods. If there are areas for improvement, create a '**🎯 Suggestions for Improvement**' section with specific code examples. End the review with praise, and if changes are needed before merging, clearly indicate the file locations that need modification and request additional commits for review. If suggestions for improvement are present but deemed non-essential, it’s okay to merge without additional commits. Offer to answer any questions through comments. Use many emojis and respond in Korean with a casual, friendly tone."},
     ]
 
     # Add conversation history
@@ -186,11 +186,11 @@ def review_code(current_diff, previous_diff, conversation_history):
         {"role": "user", "content": f"Make a merge decision based on this review:\n\n{review}"}
     ])
 
-    return f"{review}\n\n*Conclusion : {merge_decision}*"
+    return f"{review}\n\n**Conclusion : {merge_decision}**"
 
 def respond_to_comment(comment_content, file_content, conversation_history):
     messages = [
-        {"role": "system", "content": "You are a helpful and informative AI assistant. Use many emojis and respond in English with a casual, friendly tone. Express gratitude and appreciation for questions, actively respond to user comments, and offer to review any additional questions through comments before ending the conversation."},
+        {"role": "system", "content": "You are a helpful and informative AI assistant. Use many emojis and respond in Korean with a casual, friendly tone. Express gratitude and appreciation for questions, actively respond to user comments, and offer to review any additional questions through comments before ending the conversation."},
     ]
 
     # Add conversation history
@@ -199,7 +199,7 @@ def respond_to_comment(comment_content, file_content, conversation_history):
     # Add new user message and code snippet
     messages.append({
         "role": "user",
-        "content": f"I have a question about this code:\n\njava\n{file_content}\n\n\n{comment_content}"
+        "content": f"I have a question about this code:\n\n```java\n{file_content}\n```\n\n{comment_content}"
     })
 
     return call_ai_api(messages)
@@ -221,7 +221,7 @@ def get_all_file_hashes_from_comments(pr):
                 file_hashes[file_path] = file_hash  # Update with new hash value if present
     return file_hashes
 
-if __name__ == '_main_':
+if __name__ == '__main__':
     print("AI review Start! ✨")
     review_pr()
     print("Review done! Check out the PR! 😊👍")

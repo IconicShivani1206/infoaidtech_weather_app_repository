@@ -16,7 +16,7 @@ my_label.pack()
 player = tkvideo("bg vdo.mp4", my_label, loop = 1, size = (1000,300))
 player.play()
 
-print("Changes ReDone Again")
+print("Bhai Kitni baar change karu??")
 
 def getWeather():
     ct=entry.get()    
